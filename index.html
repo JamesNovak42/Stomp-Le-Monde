@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Stomp le Monde</title>
+<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no">
+<link href='http://fonts.googleapis.com/css?family=Oswald:400,700|Source+Sans+Pro:400,600,700' rel='stylesheet' type='text/css'>
+<script type="text/javascript" src='js/jquery-1.8.3.min.js'></script>
+<script type="text/javascript" src='js/jquery-ui-1.9.2.custom.min.js'></script>
+<script type="text/javascript" src='js/jquery.absolutize.js'></script>
+<script type="text/javascript" src='js/jquery.ui.touch-punch.js'></script>
+<script type="text/javascript" src='js/hammer.js/hammer.js'></script>
+<script type="text/javascript" src='js/hammer.js/jquery.hammer.js'></script>
+<!--<script type="text/javascript" src='js/hammer.js/jquery.specialevent.hammer.js'></script>-->
+<script type="text/javascript" src='js/jnUtils.js'></script>
+<script type="text/javascript" src='js/mappanel.js'></script>
+<script type="text/javascript" src='js/unitpanel.js'></script>
+<style>
+html, body { margin: 0; padding: 0; height: 100%; width: 100%; }
+html {
+	background: #000 url('images/maps/Alborz Mountain 64.jpg') center center no-repeat;
+	background-size: contain;
+	min-height: 100%;
+}
+body {
+	min-height: 100%;
+	text-align: center;
+}
+div#hider {
+	min-height: 100%;
+	margin: 0 auto;
+}
+body, div#hider {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.map-panel {
+	width: 300px; height: 480px;
+	background: rgba(0,0,0,0.6);
+	position: fixed;
+	right: -300px; bottom: -480px;
+	z-index: 10;
+}
+.map-panel.show {
+	right: 0; bottom: 0;
+}
+.map-panel, .map-panel.show, #map-panel-button, .show>#map-panel-button {
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+#map-panel-button {
+	width: 50px; height: 50px;
+	border-radius: 35px 0 0 0;
+	background: #666;
+	position: absolute;
+	top: -50px; left: -50px;
+}
+.show>#map-panel-button { background: transparent; }
+.map-type-selector {
+	width: 25%; height: 60px;
+	padding: 0;
+	float: left;
+	color: #666;
+	font: 700 40px 'Oswald';
+	text-align: center;
+	text-shadow: 0 0 8px black;
+	cursor: pointer;
+}
+.type-selected { color: #c44 !important; }
+
+.map-div {
+	width: 299px; height: 420px;
+	/*border-left: 1px solid #444;*/
+	overflow-y: scroll;
+	overflow-x: hidden;
+	-webkit-overflow-scrolling: touch;
+}
+.map-div::-webkit-scrollbar { width: 8px; }
+.map-div::-webkit-scrollbar-track { background: #000; }
+.map-div::-webkit-scrollbar-thumb { background: #333; }
+
+.map-selector {
+	width: 100%; height: 48px;
+	padding: 12px 0 0 0;
+	float: left;
+	color: #fff;
+	font: 600 26px 'Source Sans Pro','Oswald';
+	text-align: center;
+	text-shadow: 0 1px 1px #000;
+	background: -webkit-linear-gradient(top, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	background: -moz-linear-gradient(top, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	background: -ms-linear-gradient(top, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	background: linear-gradient(to bottom, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	cursor: pointer;
+}
+.map-selector:hover {
+	background: -webkit-linear-gradient(top, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+	background: -moz-linear-gradient(top, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+	background: -ms-linear-gradient(top, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+	background: linear-gradient(to bottom, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+}
+
+.map-selected,.map-selected:hover {
+	background: -webkit-linear-gradient(top, rgba(153,51,51,0.6), rgba(51,0,0,0.6));
+	background: -moz-linear-gradient(top, rgba(153,51,51,0.6), rgba(51,0,0,0.6));
+	background: -ms-linear-gradient(top, rgba(153,51,51,0.6), rgba(51,0,0,0.6));
+	background: linear-gradient(to bottom, rgba(153,51,51,0.6), rgba(51,0,0,0.6));
+
+}
+/*********************
+ *  UNIT PANEL STUFF
+ *********************/
+.unit-panel {
+	width: 76px; height: 608px;
+	margin: 0; padding: 0;
+	background: rgba(0,0,0,0.6);
+	position: fixed;
+	left: -76px; top: -608px;
+	z-index: 10;
+}
+#unit-panel-button {
+	width: 50px; height: 50px;
+	border-radius: 0 0 35px 0;
+	background: #666;
+	position: absolute;
+	right: -50px; bottom: -50px;
+	/*z-index: -3;*/
+}
+.show>#unit-panel-button { background: transparent; }
+.unit-panel, .unit-panel.show, #unit-panel-button, .show>#unit-panel-button {
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+.unit-panel.show {
+	left: 0; top: 0;
+}
+.unit-panel-div {
+	width: 50px; height: 50px;
+	padding: 13px;
+	color: #fff;
+	font: 600 26px 'Source Sans Pro','Oswald';
+	background: -webkit-linear-gradient(top, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	background: -moz-linear-gradient(top, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	background: -ms-linear-gradient(top, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	background: linear-gradient(to bottom, rgba(51,51,51,0.6), rgba(0,0,0,0.6));
+	cursor: pointer;
+}
+.unit-panel-div:hover {
+	background: -webkit-linear-gradient(top, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+	background: -moz-linear-gradient(top, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+	background: -ms-linear-gradient(top, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+	background: linear-gradient(to bottom, rgba(68,68,68,0.6), rgba(0,0,0,0.6));
+}
+.inf {
+	width: 30px; height: 30px;
+	border-radius: 25px;
+	position: relative;
+	left: 10px; top: 10px;
+	font: 400 12px/80px 'Oswald';
+	font: 400 14px/52px 'Source Sans Pro';
+}
+.inf.ru { background: rgba(255,64,64,0.6); }
+.inf.us { background: rgba(64,255,64,0.6); }
+.inf,.ifv,.tank,.aa {
+	color: #fff;
+	text-shadow: 1px 1px 2px #000, -1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000;
+	z-index: 20;
+}
+.ifv,.tank,.aa {
+	width: 50px; height: 50px;
+	font: 400 12px/80px 'Oswald';
+	font: 400 14px/80px 'Source Sans Pro';
+}
+.ifv.ru { background: url(images/enemy-ifv.png) no-repeat center; }
+.tank.ru { background: url(images/enemy-tank.png) no-repeat center; }
+.aa.ru { background: url(images/enemy-aa.png) no-repeat center; }
+.ifv.us { background: url(images/friendly-ifv.png) no-repeat center; }
+.tank.us { background: url(images/friendly-tank.png) no-repeat center; }
+.aa.us { background: url(images/friendly-aa.png) no-repeat center; }
+</style>
+<script type="text/javascript">
+var img, mp, up;
+$(function() {
+	img = document.getElementById('map');
+	mp = new MapPanel();
+	up = new UnitPanel();
+
+});
+</script>
+</head>
+<body><div id='hider'></div></body>
+</html>
